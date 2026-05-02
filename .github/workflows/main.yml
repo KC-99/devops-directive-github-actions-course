@@ -1,0 +1,111 @@
+name: Runner Environment Inspector
+
+on:
+  workflow_dispatch:
+
+
+jobs:
+  inspect-runner:
+    name: Inspect GitHub Runner Environment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Basic runner details
+        run: |
+          echo "Runner OS: $RUNNER_OS"
+          echo "Runner Architecture: $RUNNER_ARCH"
+          echo "Runner Name: $RUNNER_NAME"
+          echo "GitHub Workspace: $GITHUB_WORKSPACE"
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Workflow: $GITHUB_WORKFLOW"
+          echo "Job: $GITHUB_JOB"
+          echo "Run ID: $GITHUB_RUN_ID"
+          echo "Run Number: $GITHUB_RUN_NUMBER"
+
+      - name: OS and kernel information
+        run: |
+          echo "===== OS RELEASE ====="
+          cat /etc/os-release || true
+
+          echo "===== KERNEL ====="
+          uname -a
+
+      - name: CPU information
+        run: |
+          echo "===== CPU DETAILS ====="
+          lscpu || true
+
+          echo "===== CPU CORE COUNT ====="
+          nproc || true
+
+      - name: Memory information
+        run: |
+          echo "===== MEMORY SUMMARY ====="
+          free -h || true
+
+          echo "===== DETAILED MEMORY INFO ====="
+          cat /proc/meminfo || true
+
+      - name: Disk and filesystem information
+        run: |
+          echo "===== DISK USAGE ====="
+          df -h || true
+
+          echo "===== BLOCK DEVICES ====="
+          lsblk || true
+
+          echo "===== MOUNT POINTS ====="
+          mount || true
+
+      - name: Network information
+        run: |
+          echo "===== NETWORK INTERFACES ====="
+          ip addr || true
+
+          echo "===== ROUTING TABLE ====="
+          ip route || true
+
+          echo "===== DNS CONFIG ====="
+          cat /etc/resolv.conf || true
+
+          echo "===== NETWORK STATS ====="
+          cat /proc/net/dev || true
+
+      - name: Process information
+        run: |
+          echo "===== TOP PROCESSES ====="
+          top -b -n1 | head -40 || true
+
+          echo "===== PROCESS LIST ====="
+          ps aux --sort=-%mem | head -30 || true
+
+      - name: Installed tool versions
+        run: |
+          echo "===== TOOL VERSIONS ====="
+          git --version || true
+          docker --version || true
+          docker compose version || true
+          python3 --version || true
+          pip3 --version || true
+          node --version || true
+          npm --version || true
+          java -version || true
+          mvn -version || true
+          jq --version || true
+          curl --version || true
+
+      - name: Docker environment
+        run: |
+          echo "===== DOCKER INFO ====="
+          docker info || true
+
+          echo "===== DOCKER IMAGES ====="
+          docker images || true
+
+      - name: Environment variables
+        run: |
+          echo "===== ENVIRONMENT VARIABLES ====="
+          printenv | sort
